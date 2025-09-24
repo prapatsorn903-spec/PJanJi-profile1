@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบตัดเกรด</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for better readability on mobile */
+        @media (max-width: 768px) {
+            .table-container {
+                overflow-x: auto;
+            }
+            td, th {
+                white-space: nowrap;
+            }
+        }
+        /* Style for grade badges */
+        .grade-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+        }
+        .grade-A { background-color: #10B981; } /* Emerald-500 */
+        .grade-B { background-color: #3B82F6; } /* Blue-500 */
+        .grade-C { background-color: #F59E0B; } /* Amber-500 */
+        .grade-D { background-color: #EF4444; } /* Red-500 */
+        .grade-F { background-color: #6B7280; } /* Gray-500 */
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 p-4 font-sans">
+
+    <!-- Main Container -->
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-xl">
+        <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">ระบบตัดเกรด</h1>
+
+        <!-- Weighting Section -->
+        <div class="bg-gray-50 p-4 rounded-md mb-6 border border-gray-200">
+            <h2 class="text-xl font-semibold mb-2">ตั้งค่าน้ำหนักคะแนน</h2>
+            <div class="flex flex-col md:flex-row gap-4 md:items-center">
+                <div class="flex-1">
+                    <label for="workWeight" class="block text-sm font-medium text-gray-700">คะแนนเก็บ (0.0 - 1.0):</label>
+                    <input type="number" id="workWeight" value="0.6" step="0.1" min="0" max="1"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                </div>
+                <div class="flex-1">
+                    <label for="examWeight" class="block text-sm font-medium text-gray-700">คะแนนสอบ (0.0 - 1.0):</label>
+                    <input type="number" id="examWeight" value="0.4" step="0.1" min="0" max="1"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                </div>
+                <button id="updateWeightsBtn"
+                        class="mt-4 md:mt-0 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    อัปเดตน้ำหนัก
+                </button>
+            </div>
+            <p id="weightWarning" class="text-red-500 text-sm mt-2 hidden">⚠️ น้ำหนักรวมต้องเท่ากับ 1.0</p>
+        </div>
+
+        <!-- Student Add Form -->
+        <div class="bg-blue-50 p-4 rounded-md mb-6 border border-blue-200">
+            <h2 class="text-xl font-semibold mb-2">เพิ่มนักเรียนใหม่</h2>
+            <form id="addStudentForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div class="col-span-1 md:col-span-2">
+                    <label for="nameInput" class="block text-sm font-medium text-gray-700">ชื่อ:</label>
+                    <input type="text" id="nameInput" placeholder="ชื่อ-นามสกุล" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                </div>
+                <div>
+                    <label for="workScoreInput" class="block text-sm font-medium text-gray-700">คะแนนเก็บ:</label>
+                    <input type="number" id="workScoreInput" placeholder="0-100" min="0" max="100" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                </div>
+                <div>
+                    <label for="examScoreInput" class="block text-sm font-medium text-gray-700">คะแนนสอบ:</label>
+                    <input type="number" id="examScoreInput" placeholder="0-100" min="0" max="100" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                </div>
+                <button type="submit"
+                        class="col-span-1 md:col-span-4 lg:col-span-1 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                    เพิ่มนักเรียน
+                </button>
+            </form>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap justify-end gap-2 mb-6">
+            <button id="calculateGradesBtn"
+                    class="px-6 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                คำนวณเกรดทั้งหมด
+            </button>
+            <button id="exportCsvBtn"
+                    class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                ส่งออกเป็น CSV
+            </button>
+            <button id="clearDataBtn"
+                    class="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                ล้างข้อมูล
+            </button>
+        </div>
+
+        <!-- Results Table -->
+        <div class="table-container bg-white rounded-lg shadow-md border border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-blue-100">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase tracking-wider rounded-tl-lg">#</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">ชื่อ</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">คะแนนเก็บ</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">คะแนนสอบ</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">คะแนนรวม</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">เกรด</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-blue-800 uppercase tracking-wider rounded-tr-lg">จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTableBody" class="bg-white divide-y divide-gray-200">
+                    <!-- Student rows will be injected here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JavaScript Section -->
+    <script>
+        // --- ส่วนการจัดการข้อมูลและ UI ---
+
+        // Variables and DOM elements
+        let students = [];
+        let workWeight = 0.6;
+        let examWeight = 0.4;
+        const workWeightInput = document.getElementById('workWeight');
+        const examWeightInput = document.getElementById('examWeight');
+        const weightWarning = document.getElementById('weightWarning');
+        const addStudentForm = document.getElementById('addStudentForm');
+        const nameInput = document.getElementById('nameInput');
+        const workScoreInput = document.getElementById('workScoreInput');
+        const examScoreInput = document.getElementById('examScoreInput');
+        const resultsTableBody = document.getElementById('resultsTableBody');
+        const calculateGradesBtn = document.getElementById('calculateGradesBtn');
+        const updateWeightsBtn = document.getElementById('updateWeightsBtn');
+        const exportCsvBtn = document.getElementById('exportCsvBtn'); // New button element
+        const clearDataBtn = document.getElementById('clearDataBtn');
+
+        // --- Functions ---
+
+        /**
+         * Fetches and parses student data from a public Google Sheet CSV URL.
+         */
+        async function fetchAndLoadData() {
+            const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQjQxsfM7qrbNUpI65CbyTcQeIjB2Rx1EmbLcNvQLyJ1P34bzHNf1Xm65wFX2fko-rRgBYoNsSokLok/pub?gid=405172139&single=true&output=csv';
+            try {
+                console.log("Fetching student data from Google Sheet...");
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const csvText = await response.text();
+                const lines = csvText.trim().split('\n');
+                
+                // Skip the header row and map the rest of the data
+                const newStudents = lines.slice(1).map(line => {
+                    const parts = line.split(',');
+                    return {
+                        name: parts[1].trim(),
+                        workScore: parseFloat(parts[2]),
+                        examScore: parseFloat(parts[3]),
+                        totalScore: null,
+                        grade: null
+                    };
+                });
+                
+                students = newStudents;
+                console.log("Students data loaded successfully from Google Sheet.");
+            } catch (error) {
+                console.error("Failed to load data from Google Sheet:", error);
+                // Fallback to an empty list on error
+                students = [];
+            }
+        }
+
+        /**
+         * Calculates the total score based on given weights.
+         * @param {number} workScore - The work score.
+         * @param {number} examScore - The exam score.
+         * @returns {number} The calculated total score, rounded to two decimal places.
+         */
+        function calculateTotalScore(workScore, examScore) {
+            return parseFloat((workScore * workWeight + examScore * examWeight).toFixed(2));
+        }
+
+        /**
+         * Determines the grade based on the total score.
+         * @param {number} totalScore - The total score.
+         * @returns {string} The corresponding grade (A, B, C, D, F).
+         */
+        function getGrade(totalScore) {
+            if (totalScore >= 80) return 'A';
+            if (totalScore >= 70) return 'B';
+            if (totalScore >= 60) return 'C';
+            if (totalScore >= 50) return 'D';
+            return 'F';
+        }
+
+        /**
+         * Renders the student data into the HTML table.
+         * The function clears the existing table and redraws it from the `students` array.
+         */
+        function renderTable() {
+            resultsTableBody.innerHTML = '';
+            students.forEach((student, index) => {
+                const grade = student.grade;
+                const gradeClass = grade ? `grade-${grade}` : '';
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition-colors duration-150';
+                row.innerHTML = `
+                    <td class="px-4 py-3 whitespace-nowrap">${index + 1}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">${student.name}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">${student.workScore}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">${student.examScore}</td>
+                    <td class="px-4 py-3 whitespace-nowrap font-bold">${student.totalScore !== null ? student.totalScore.toFixed(2) : '-'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <span class="grade-badge ${gradeClass}">${student.grade || '-'}</span>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <button onclick="deleteStudent(${index})"
+                                class="px-3 py-1 bg-red-500 text-white text-xs rounded-md hover:bg-red-600 transition-colors duration-200">
+                            ลบ
+                        </button>
+                    </td>
+                `;
+                resultsTableBody.appendChild(row);
+            });
+        }
+
+        /**
+         * Adds a new student to the `students` array and saves to localStorage.
+         * @param {string} name - The student's name.
+         * @param {number} workScore - The student's work score.
+         * @param {number} examScore - The student's exam score.
+         */
+        function addStudent(name, workScore, examScore) {
+            students.push({
+                name: name,
+                workScore: parseFloat(workScore),
+                examScore: parseFloat(examScore),
+                totalScore: null,
+                grade: null
+            });
+            saveData();
+            renderTable();
+        }
+
+        /**
+         * Deletes a student from the `students` array based on their index.
+         * @param {number} index - The index of the student to delete.
+         */
+        function deleteStudent(index) {
+            students.splice(index, 1);
+            saveData();
+            renderTable();
+            console.log(`Student at index ${index} deleted.`);
+        }
+
+        /**
+         * Calculates the total score and grade for all students in the `students` array.
+         */
+        function calculateAllGrades() {
+            students.forEach(student => {
+                student.totalScore = calculateTotalScore(student.workScore, student.examScore);
+                student.grade = getGrade(student.totalScore);
+            });
+            saveData();
+            renderTable();
+        }
+        
+        /**
+         * Saves the current students and weights to localStorage.
+         */
+        function saveData() {
+            localStorage.setItem('students', JSON.stringify(students));
+            localStorage.setItem('workWeight', workWeight);
+            localStorage.setItem('examWeight', examWeight);
+            console.log("Data saved to localStorage.");
+        }
+
+        /**
+         * Loads students and weights from localStorage. If no data exists, it loads sample data.
+         * This function now loads weights from localStorage but fetches student data from the Google Sheet.
+         */
+        async function loadData() {
+            const savedWorkWeight = localStorage.getItem('workWeight');
+            const savedExamWeight = localStorage.getItem('examWeight');
+
+            // Load weights from localStorage if they exist
+            if (savedWorkWeight && savedExamWeight) {
+                workWeight = parseFloat(savedWorkWeight);
+                examWeight = parseFloat(savedExamWeight);
+                workWeightInput.value = workWeight;
+                examWeightInput.value = examWeight;
+            }
+
+            // Fetch and load student data from the Google Sheet
+            await fetchAndLoadData();
+            renderTable();
+        }
+
+        /**
+         * Validates the sum of work and exam weights.
+         */
+        function validateWeights() {
+            const total = parseFloat(workWeightInput.value) + parseFloat(examWeightInput.value);
+            if (Math.abs(total - 1.0) > 0.001) { // Using a small epsilon for floating-point comparison
+                weightWarning.classList.remove('hidden');
+                updateWeightsBtn.disabled = true;
+                return false;
+            } else {
+                weightWarning.classList.add('hidden');
+                updateWeightsBtn.disabled = false;
+                return true;
+            }
+        }
+
+        /**
+         * Event handler for updating weights.
+         */
+        function updateWeightsHandler() {
+            if (validateWeights()) {
+                workWeight = parseFloat(workWeightInput.value);
+                examWeight = parseFloat(examWeightInput.value);
+                saveData();
+                calculateAllGrades(); // Recalculate grades with new weights
+                console.log("Updated weights and recalculated grades.");
+            } else {
+                console.error("The sum of weights must be 1.0.");
+            }
+        }
+
+        /**
+         * Event handler for clearing all data.
+         */
+        function clearDataHandler() {
+            students = [];
+            localStorage.removeItem('students');
+            renderTable();
+            console.log("All student data cleared from localStorage.");
+        }
+
+        /**
+         * Exports the current student data to a CSV file.
+         */
+        function exportToCsv() {
+            // Define the CSV header
+            const headers = ["#", "ชื่อ", "คะแนนเก็บ", "คะแนนสอบ", "คะแนนรวม", "เกรด"];
+            
+            // Map student data to CSV rows
+            const csvRows = students.map((student, index) => {
+                const totalScore = student.totalScore !== null ? student.totalScore.toFixed(2) : '-';
+                const grade = student.grade || '-';
+                return [index + 1, student.name, student.workScore, student.examScore, totalScore, grade].join(',');
+            });
+            
+            // Join header and rows
+            const csvContent = [
+                headers.join(','),
+                ...csvRows
+            ].join('\n');
+            
+            // Create a Blob and a download link
+            const blob = new Blob(["\ufeff", csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            // Set download attributes
+            link.href = URL.createObjectURL(blob);
+            link.download = `คะแนนนักเรียน_${new Date().toLocaleDateString('th-TH')}.csv`;
+            
+            // Append and click the link to trigger download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            console.log("CSV file exported successfully.");
+        }
+
+        // --- Event Listeners ---
+
+        // Listen for form submission to add a new student
+        addStudentForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            addStudent(nameInput.value, workScoreInput.value, examScoreInput.value);
+            addStudentForm.reset(); // Clear form inputs after submission
+            nameInput.focus();
+        });
+
+        // Listen for the "Calculate All Grades" button click
+        calculateGradesBtn.addEventListener('click', calculateAllGrades);
+
+        // Listen for weight input changes to validate
+        workWeightInput.addEventListener('input', validateWeights);
+        examWeightInput.addEventListener('input', validateWeights);
+
+        // Listen for the "Update Weights" button click
+        updateWeightsBtn.addEventListener('click', updateWeightsHandler);
+
+        // Listen for the "Clear Data" button click
+        clearDataBtn.addEventListener('click', clearDataHandler);
+
+        // New: Listen for the "Export CSV" button click
+        exportCsvBtn.addEventListener('click', exportToCsv);
+
+        // --- Initialization ---
+
+        // Load data when the page first loads
+        window.onload = () => {
+            loadData();
+            validateWeights(); // Initial validation check
+        };
+    </script>
+
+</body>
+</html>
