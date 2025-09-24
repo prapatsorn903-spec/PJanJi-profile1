@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Quicksand:wght@400;600&display=swap');
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, #c3aed6, #f5e6ff, #d6e0f0);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("https://www.transparenttextures.com/patterns/stardust.png");
+      opacity: 0.4;
+      z-index: 0;
+    }
+
+    .profile-card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 25px;
+      box-shadow: 0 0 20px rgba(255, 182, 193, 0.8),
+                  0 0 40px rgba(147, 112, 219, 0.6);
+      padding: 30px;
+      text-align: center;
+      max-width: 380px;
+      width: 100%;
+      z-index: 2;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .profile-card .fairy {
+      position: relative;
+      display: inline-block;
+    }
+
+    .profile-card img {
+      border-radius: 20px;
+      width: 200px;
+      height: 300px;
+      object-fit: cover;
+      margin-bottom: 20px;
+      box-shadow: 0 0 15px rgba(123, 104, 238, 0.7);
+      border: 3px solid #fff;
+      z-index: 2;
+      position: relative;
+    }
+
+    /* ปีกนางฟ้า */
+    .wing {
+      position: absolute;
+      width: 120px;
+      height: 160px;
+      background: radial-gradient(circle at 30% 30%, rgba(173,216,230,0.7), transparent);
+      border-radius: 50%;
+      top: 60px;
+      z-index: 1;
+      animation: flutter 3s ease-in-out infinite alternate;
+    }
+    .wing.left { left: -100px; transform: rotate(-25deg); }
+    .wing.right { right: -100px; transform: rotate(25deg); }
+    @keyframes flutter {
+      0% { transform: scale(1) rotate(25deg); }
+      100% { transform: scale(1.1) rotate(30deg); }
+    }
+
+    .profile-card h1 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 28px;
+      color: #6a1b9a;
+      margin-bottom: 10px;
+      text-shadow: 0 0 8px rgba(186, 104, 200, 0.8);
+    }
+    .profile-card p {
+      font-size: 16px;
+      color: #333;
+      margin: 6px 0;
+    }
+    .profile-card p span {
+      font-weight: bold;
+      color: #7b1fa2;
+    }
+
+    /* ดอกไม้ */
+    .flower {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: radial-gradient(circle, pink 40%, transparent 70%);
+      border-radius: 50%;
+      animation: spin 8s linear infinite;
+      z-index: 0;
+    }
+    .flower::before, .flower::after {
+      content: '';
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: radial-gradient(circle, pink 40%, transparent 70%);
+      border-radius: 50%;
+    }
+    .flower::before { top: -20px; left: 0; }
+    .flower::after { left: -20px; top: 0; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .flower.one { top: 10%; left: 15%; }
+    .flower.two { bottom: 20%; right: 10%; }
+    .flower.three { top: 70%; left: 5%; }
+
+    /* ผีเสื้อ */
+    .butterfly {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: radial-gradient(circle, #ffccff 40%, transparent 70%);
+      border-radius: 50%;
+      animation: fly 12s linear infinite;
+    }
+    .butterfly::before, .butterfly::after {
+      content: '';
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: radial-gradient(circle, #cc99ff 40%, transparent 70%);
+      border-radius: 50%;
+    }
+    .butterfly::before { left: -20px; top: 0; }
+    .butterfly::after { left: 20px; top: 0; }
+    @keyframes fly {
+      0% { transform: translate(0,0) rotate(0deg); }
+      50% { transform: translate(200px, -150px) rotate(180deg); }
+      100% { transform: translate(0,0) rotate(360deg); }
+    }
+    .butterfly.one { top: 30%; left: 10%; }
+    .butterfly.two { top: 60%; right: 15%; animation-delay: 3s; }
+
+    /* ก้อนเมฆ */
+    .cloud {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0.9;
+      z-index: 3;
+      animation: floatCloud 30s linear infinite;
+    }
+    .cloud::before, .cloud::after {
+      content: '';
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+    }
+    .cloud::before { width: 80px; height: 80px; top: -30px; left: -40px; }
+    .cloud::after { width: 100px; height: 100px; top: -40px; right: -50px; }
+    @keyframes floatCloud {
+      0% { transform: translateX(-100vw); }
+      100% { transform: translateX(100vw); }
+    }
+    .cloud.one { width: 120px; height: 70px; bottom: 15%; left: -150px; animation-duration: 40s; }
+    .cloud.two { width: 150px; height: 90px; top: 20%; left: -200px; animation-duration: 60s; }
+
+    /* พุ่มไม้ */
+    .bush {
+      position: absolute;
+      bottom: 5%;
+      width: 120px;
+      height: 80px;
+      background: radial-gradient(circle at 30% 30%, #4caf50, #2e7d32);
+      border-radius: 50%;
+      z-index: 2;
+      animation: sway 5s ease-in-out infinite alternate;
+    }
+    .bush::before, .bush::after {
+      content: '';
+      position: absolute;
+      width: 100px;
+      height: 80px;
+      background: radial-gradient(circle at 30% 30%, #66bb6a, #388e3c);
+      border-radius: 50%;
+      top: -20px;
+    }
+    .bush::before { left: -60px; }
+    .bush::after { right: -60px; }
+
+    @keyframes sway {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(3deg); }
+    }
+
+    .bush.left { left: 5%; }
+    .bush.right { right: 5%; }
+  </style>
+</head>
+<body>
+  <!-- ดอกไม้ -->
+  <div class="flower one"></div>
+  <div class="flower two"></div>
+  <div class="flower three"></div>
+
+  <!-- ผีเสื้อ -->
+  <div class="butterfly one"></div>
+  <div class="butterfly two"></div>
+
+  <!-- ก้อนเมฆ -->
+  <div class="cloud one"></div>
+  <div class="cloud two"></div>
+
+  <!-- พุ่มไม้ -->
+  <div class="bush left"></div>
+  <div class="bush right"></div>
+
+  <div class="profile-card">
+    <div class="fairy">
+      <div class="wing left"></div>
+      <img src="PJangJi.png" alt="PJangJi">
+      <div class="wing right"></div>
+    </div>
+    <h1>✨ Praphatson Chanthaduang ✨</h1>
+    <p><span>E-mail:</span> prapatsorn903@gmail.com</p>
+    <p><span>Department:</span> Science Education</p>
+    <p><span>Faculty:</span> Faculty of Education</p>
+  </div>
+</body>
+</html>
